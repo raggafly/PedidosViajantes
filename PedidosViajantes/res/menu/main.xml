@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_new_form"
+        android:icon="@drawable/folder_documents"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/btnActions">
+        <menu>
+            <item
+                android:id="@+id/menu_new"
+                android:icon="@android:drawable/ic_menu_add"
+                android:showAsAction="ifRoom|withText"
+                android:title="@string/menu_nuevo"/>
+            <item
+                android:id="@+id/menu_save"
+                android:icon="@android:drawable/ic_menu_save"
+                android:showAsAction="ifRoom"
+                android:title="@string/menu_guardar"/>
+            <item
+                android:id="@+id/menu_previsualizacion"
+                android:icon="@android:drawable/ic_menu_preferences"
+                android:showAsAction="ifRoom|withText"
+                android:title="@string/menu_previsualizacion"/>
+            <item
+                android:id="@+id/menu_mail"
+                android:icon="@android:drawable/ic_dialog_email"
+                android:showAsAction="ifRoom"
+                android:title="@string/menu_email"/>
+        </menu>
+    </item>
+
+</menu>

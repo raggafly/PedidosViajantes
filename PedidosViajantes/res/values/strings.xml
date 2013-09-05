@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Pedidos Viajantes</string>
+    <string name="action_settings">Settings</string>
+    <string name="nombreEmpresa">Empresa</string>
+    <string name="tabCliente">Crear Cliente</string>
+    <string name="tabPedido">Crear Pedido</string>
+    <string name="tabArticulos">Artículos</string>
+    <string name="string_name"></string>
+    <string name="txtEmpresa">Nombre de la empresa:</string>
+    <string name="txtCodEmpresa">Codigo Empresa:</string>
+    <string name="txtDomicilio">Domicilio:</string>
+    <string name="txtPoblacion">Poblacion:</string>
+    <string name="txtTelefono">Telefono:</string>
+    <string name="txtCIF">DNI/CIF Empresa:</string>
+    <string name="txtUsuario">(Obligatorio) Elige usuario*:</string>
+    <string name="txtHintCodigoCliente">Codigo Cliente</string>
+    <string name="txtHintCliente">Cliente</string>
+    <string name="txtHintDomicilio">Domicilio</string>
+    <string name="txtHintTelefono">Telefono</string>
+    <string name="txtHintPoblacion">Poblacion</string>
+    <string name="txtHintCIF">DNI / CIF Empresa</string>
+    <string name="lblDescripcion"><u><b>Descripcion</b></u></string>
+    <string name="lblCantidad"><u><b>Cantidad</b></u></string>
+    <string name="lblPrecio"><u><b>Precio</b></u></string>
+    <string name="lblDescuento"><u><b>DTO</b></u></string>
+    <string name="cabeceraTabla"><b>ARTICULOS</b></string>
+    <string name="btnActions">ACCIONES</string>
+
+    <string-array name="usuario_array">
+        <item>Julian</item>
+        <item>Miguel</item>
+        <item>Valentin</item>
+    </string-array>
+
+    <string name="btnBorrarFila"><u><b>Borrar</b></u></string>
+    <string name="inclArt">Incluir Articulo</string>
+    <string name="chkLabelFecha">Fecha Pedido*:</string>
+    <string name="chkLabel105">105</string>
+    <string name="btnNuevaFila">Nuevo Artículo</string>
+    <string name="menu_email">E-Mail</string>
+    <string name="menu_guardar">Guardar PDF</string>
+    <string name="menu_nuevo">Nuevo</string>
+    <string name="menu_previsualizacion">Previsualización</string>
+    <string name="title_activity_dialog_art">DialogArt</string>
+    <string name="btnAceptar">Añadir</string>
+    <string name="btnCancelar">Cancelar</string>
+
+</resources>
