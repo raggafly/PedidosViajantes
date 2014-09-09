@@ -4,15 +4,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -50,6 +50,7 @@ import com.combo.pedidosviajantes.report.CreatePDF;
 import com.combo.pedidosviajantes.util.Connection;
 import com.combo.pedidosviajantes.util.CreateHierachyDirectories;
 import com.combo.pedidosviajantes.vo.ArticuloVO;
+import com.combo.pedidosviajantes.vo.BillVO;
 import com.combo.pedidosviajantes.vo.ClientVO;
 import com.combo.pedidosviajantes.vo.CompanyVO;
 import com.lowagie.text.BadElementException;
@@ -66,6 +67,7 @@ public class MainActivity extends Activity {
 	private static HashMap<Integer, ArticuloVO> MapArtVO = new HashMap<Integer, ArticuloVO>();
 	private static CompanyVO company = new CompanyVO();
 	private static ClientVO cliente = new ClientVO();
+	private static BillVO factura = new BillVO();
 	private static String viajante = "";
 	private static Bitmap bitmapHeader = null;
 	private static String urlDelete = "";
@@ -324,8 +326,8 @@ public class MainActivity extends Activity {
 			viajante = String.valueOf(spinner.getSelectedItem());
 			cn = new Connection();
 			// Nos conectamos al servidor
-			boolean conectado = cn.ftpConnect("decoracionessantander.com",
-					"pedidos", "Decosan2007", 21);
+			boolean conectado = cn.ftpConnect("HOST",
+					"USER", "PASSWORD", 21);
 			if (!conectado) {
 				CharSequence text = "fallo de conexion";
 				int duration = Toast.LENGTH_SHORT;
@@ -335,42 +337,63 @@ public class MainActivity extends Activity {
 			vectorPDF = crearPDFCompleto();
 			// Guardamos el pdf en el servidor
 			cn.ftpUpload(vectorPDF.get(0), vectorPDF.get(1), vectorPDF.get(2));
-
+//			System.out.print(vectorPDF.get(0)+"____"+vectorPDF.get(1)+"____"+ vectorPDF.get(2));
 			// Obtenemos la url del fichero
 
 			String urlFtp = cn.getUrlFile(viajante.toLowerCase(),
 					vectorPDF.get(1));
 			urlDelete = vectorPDF.get(2) + "/" + vectorPDF.get(1);
 			urlDeleteFileSD = vectorPDF.get(0);
+			
+			File fl = new File(urlDeleteFileSD);
+			Uri path = Uri.fromFile(fl);
+			Intent intent = new Intent();
+//			intent.setType("application/pdf");
+			intent.setPackage("com.adobe.reader");
+            intent.setDataAndType(path, "application/pdf");
 
-			// Mostramos el pdf en el WebView
-			WebView webView = new WebView(this);
+			PackageManager pm = getPackageManager();
+			ArrayList <ResolveInfo> activities = (ArrayList<ResolveInfo>) pm.queryIntentActivities(intent, 0);
+			if (activities.size() > 0) {
+			    startActivity(intent);
+			} else {
+			    Toast.makeText(getApplicationContext(), "No se ha podido cargar el documento.", 1000);
+			}
 
-			webView.loadUrl("https://docs.google.com/gview?embedded=true&url=http://"
-					+ urlFtp);
-			webView.getSettings().setJavaScriptEnabled(true);
-			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-			dialog.setView(webView);
-			dialog.setPositiveButton("Okay",
-					new DialogInterface.OnClickListener() {
 
-						public void onClick(DialogInterface dialog, int which) {
-							// Connection cn = new Connection();
-							// StrictMode.ThreadPolicy policy = new
-							// StrictMode.ThreadPolicy.Builder()
-							// .permitAll().build();
-							// StrictMode.setThreadPolicy(policy);
-							// boolean conectado = cn.ftpConnect(
-							// "decoracionessantander.com", "pedidos",
-							// "Decosan2007", 21);
-
-							cn.ftpRemoveFile(urlDelete);
-							cn.ftpDisconnect();
-							new File(urlDeleteFileSD).delete();
-							dialog.dismiss();
-						}
-					});
-			dialog.show();
+			
+//************------------SE COMENTA EL WEBVIEW--------------**************
+			//comentamos webview
+//			WebView webView = new WebView(this);
+//
+//			webView.loadUrl("https://docs.google.com/gview?embedded=true&url=http://"
+//					+ urlFtp);
+//			webView.getSettings().setJavaScriptEnabled(true);
+//			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+//			dialog.setView(webView);
+//			dialog.setPositiveButton("Okay",
+//					new DialogInterface.OnClickListener() {
+//
+//						public void onClick(DialogInterface dialog, int which) {
+//							// Connection cn = new 
+//							
+//							// StrictMode.ThreadPolicy policy = new
+//							// StrictMode.ThreadPolicy.Builder()
+//							// .permitAll().build();
+//							// StrictMode.setThreadPolicy(policy);
+//							// boolean conectado = cn.ftpConnect(
+//							// "decoracionessantander.com", "pedidos",
+//							// "Decosan2007", 21);
+//
+//							cn.ftpRemoveFile(urlDelete);
+//							cn.ftpDisconnect();
+//							new File(urlDeleteFileSD).delete();
+//							dialog.dismiss();
+//						}
+//					});
+//			dialog.show();
+//************------------FIN COMMENT EL WEBVIEW--------------**************	
+			
 			break;
 		// return true;
 		case R.id.menu_mail:
@@ -407,7 +430,7 @@ public class MainActivity extends Activity {
 		startActivity(Intent.createChooser(emailIntent, "Email "));
 	}
 
-	public Vector<String> crearPDFCompleto() {
+	@SuppressLint("NewApi") public Vector<String> crearPDFCompleto() {
 		recogerDatos();
 
 		// Recogemos el viajante seleccionado
@@ -448,7 +471,7 @@ public class MainActivity extends Activity {
 		// Generamos el pdf
 		CreatePDF generatePDF = new CreatePDF();
 		Vector<String> vectorPDF = new Vector<String>();
-		vectorPDF = generatePDF.generatePDF(MapArtVO, company, cliente,
+		vectorPDF = generatePDF.generatePDF(MapArtVO, company, cliente,factura,
 				viajante, image);
 
 		return vectorPDF;
@@ -528,20 +551,22 @@ public class MainActivity extends Activity {
 
 		EditText etDireccion = (EditText) findViewById(R.id.etDomicilio);
 		String direccionCliente = etDireccion.getText().toString();
-		cliente.setCodCompany(direccionCliente);
+		cliente.setAddress(direccionCliente);
 
 		EditText etPoblacion = (EditText) findViewById(R.id.etPoblacion);
 		String poblacionCliente = etPoblacion.getText().toString();
-		cliente.setCodCompany(poblacionCliente);
+		cliente.setTown(poblacionCliente);
 
 		EditText etTelefonoCliente = (EditText) findViewById(R.id.etTelefono);
 		String telefonoCliente = etTelefonoCliente.getText().toString();
-		cliente.setCodCompany(telefonoCliente);
+		cliente.setPhone(telefonoCliente);
 
 		EditText etCifCliente = (EditText) findViewById(R.id.etCIF);
 		String cifCliente = etCifCliente.getText().toString();
-		cliente.setCodCompany(cifCliente);
-
+		cliente.setCif(cifCliente);
+		
+		EditText observaciones = (EditText) findViewById(R.id.fname);
+		factura.setObservaciones(observaciones.getText().toString());
 	}
 
 	public void crearDirectorio() {

@@ -23,13 +23,10 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.widget.ImageView;
 
-import com.combo.pedidosviajantes.R;
 import com.combo.pedidosviajantes.vo.ArticuloVO;
+import com.combo.pedidosviajantes.vo.BillVO;
 import com.combo.pedidosviajantes.vo.ClientVO;
 import com.combo.pedidosviajantes.vo.CompanyVO;
 import com.lowagie.text.BadElementException;
@@ -63,7 +60,7 @@ public class CreatePDF {
 	private static String FILE = "";
 
 	public Vector generatePDF(HashMap<Integer, ArticuloVO> mapArtVO,
-			CompanyVO company, ClientVO cliente, String nameBussinessTraveler,Image img) {
+			CompanyVO company, ClientVO cliente, BillVO factura ,String nameBussinessTraveler,Image img) {
 		FILE ="";
 		FILE =Environment.getExternalStorageDirectory() + "/";
 		Date actuallyDate = new Date();
@@ -72,9 +69,9 @@ public class CreatePDF {
 		String srcFilePath = FILE + nameBussinessTraveler.toLowerCase() + "/";
 		String desFileName = cliente.getName().trim() + "_"
 				+ dateLong.toString() + ".pdf";
-		String desDirectory = "/pedidosViajantes/HistoricoPDF/"+nameBussinessTraveler.toLowerCase();
+		String desDirectory = "/public_html/pedidosViajantes/HistoricoPDF/"+nameBussinessTraveler.toLowerCase();
 
-		FILE = FILE +"PedidosViajantes/"+ nameBussinessTraveler.toLowerCase() +"/" + "_"
+		FILE = FILE +"pedidosViajantes/"+ nameBussinessTraveler.toLowerCase() +"/" + "_"
 				+ dateLong.toString() + ".pdf";
 
 		v.add(FILE);
@@ -155,13 +152,13 @@ public class CreatePDF {
 					"Tlf: " + company.getPhone(), 550, 740, 0);
 
 			// DATOS CLIENTE
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, cliente.getName(),
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Nombre: "+cliente.getName(),
 					50, 700, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, cliente.getAddress(),
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Dirección: "+cliente.getAddress(),
 					50, 680, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, cliente.getPhone(),
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Tlf: "+cliente.getPhone(),
 					50, 660, 0);
-			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, cliente.getTown(),
+			cb.showTextAligned(PdfContentByte.ALIGN_LEFT, "Población: "+cliente.getTown(),
 					50, 640, 0);
 			// cb.showText( cliente.getName());
 			// cb.showText(cliente.getAddress());
@@ -173,7 +170,7 @@ public class CreatePDF {
 
 			cb.sanityCheck();
 
-			createTable(mapArtVO, document, writer);
+			createTable(mapArtVO, document, writer, factura);
 
 			Rectangle rect = writer.getBoxSize("art");
 			switch (writer.getPageNumber() % 2) {
@@ -205,7 +202,7 @@ public class CreatePDF {
 	}
 
 	private static void createTable(HashMap<Integer, ArticuloVO> mapArtVO,
-			Document document, PdfWriter writer) throws BadElementException {
+			Document document, PdfWriter writer, BillVO factura) throws BadElementException {
 		Paragraph preface = new Paragraph();
 		float width = PageSize.A4.getWidth();
 		float height = PageSize.A4.getHeight();
@@ -310,14 +307,14 @@ public class CreatePDF {
 		int pos = 550;
 		table.writeSelectedRows(0, -1, 50, pos, writer.getDirectContent());
 
-		String observaciones = "hola 223435345 ljojoh oh jñokljdfaslffkñladfjñalsdfj dlñfañjfkl en la casa de pepito ia ia ooooo hasñlfj";
+		
 		table = new PdfPTable(1);
 		table.setHorizontalAlignment(100);
 
 		table = new PdfPTable(1);
 		table.setTotalWidth(width - 100);
 
-		frase = new Phrase("Observaciones: " + observaciones, subFont);
+		frase = new Phrase("Observaciones: " + factura.getObservaciones(), subFont);
 		c1 = new PdfPCell(frase);
 		c1.setHorizontalAlignment(Element.ALIGN_LEFT);
 		table.addCell(c1);
